@@ -1,0 +1,17 @@
+<!-- templates/book.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Appointment</title>
+</head>
+<body>
+    <h1>Book an Appointment</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Book Now</button>
+        <a href="{% url 'appointment_list' %}">See List</a>
+    </form>
+</body>
+</html>
