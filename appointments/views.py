@@ -17,13 +17,26 @@ from django.contrib import messages
 API_URL = 'http://localhost:8000/api'
 
 def home(request):
-    return render(request, 'home.html')
+    if request.user.is_authenticated:
+        token, created = Token.objects.get_or_create(user=request.user)
+        response = requests.get(
+            f'{API_URL}/appointmentsAPI/',
+            headers={'Authorization': f'Token {token.key}'}
+        )
 
+        if response.status_code == 200:
+            appointments = response.json()
+        else:
+            appointments = []
+    else:
+        appointments = []
 
-def home(request):
-    return render(request, 'home.html')
+    return render(request, 'home.html', {'appointments': appointments})
 
 def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('book')
+
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -35,11 +48,14 @@ def register_view(request):
     return render(request, 'register.html', {'form': form})
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('/')
+
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             login(request, form.get_user())
-            return redirect('book')
+            return redirect('/')
     else:
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
@@ -65,6 +81,18 @@ def book_appointment(request):
             messages.error(request, f'Failed to book appointment: {response.text}')
 
     return render(request, 'book.html')
+
+@login_required
+def list_appointments(request):
+    token, created = Token.objects.get_or_create(user=request.user)
+    response = requests.get(f'{API_URL}/appointmentsAPI/', headers={'Authorization': f'Token {token.key}'})
+
+    if response.status_code == 200:
+        appointments = response.json()
+    else:
+        appointments = []
+
+    return render(request, 'appointments.html', {'appointments': appointments})
 
 # API Starts Here
 class RegisterAPI(generics.CreateAPIView):

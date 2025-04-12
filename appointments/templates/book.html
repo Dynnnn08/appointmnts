@@ -14,8 +14,13 @@
         <label>Time:</label>
         <input type="time" name="time" class="form-control" required><br>
         <label>Service:</label>
-        <input type="text" name="service" class="form-control" required><br>
+        <select name="service" class="form-control" required>
+            <option value="">-- Select Service --</option>
+            <option value="Check Up">Check Up</option>
+            <option value="Consultation">Consultation</option>
+        </select><br>
         <button class="btn btn-success">Book Appointment</button>
+        <a href="/" class="btn btn-default">Back</a>
     </form>
 </div>
 {% endblock %}

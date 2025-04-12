@@ -7,11 +7,11 @@
     <h1>All Booked Appointments</h1>
     <ul>
         {% for appointment in appointments %}
-            <li>{{ appointment.name }} | {{ appointment.service }} | {{ appointment.date }} {{ appointment.time }}</li>
+            <li>{{ appointment.service }} | {{ appointment.date }} {{ appointment.time }}</li>
         {% empty %}
             <li>No appointments found.</li>
         {% endfor %}
     </ul>
-    <a href="{% url 'book_appointment' %}">Book another appointment</a>
+    <a href="{% url 'book' %}">Book another appointment</a>
 </body>
 </html>

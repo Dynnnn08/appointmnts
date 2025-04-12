@@ -9,7 +9,7 @@ body {
   justify-content: space-between;
 }
 .content {
-  height: 100%;
+  flex: 1;
 }
 .navbar {
   background-color: #075F2D;
@@ -55,4 +55,15 @@ input[type="password"] {
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
+}
+
+footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  color: #666;
+  font-size: 0.9rem;
 }
