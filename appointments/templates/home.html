@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+{% if user.is_authenticated %}
+{% else %}
+<div style="text-align: center; margin-top: 50px;" class="hero">
+  <img src="{% static 'images/caragalogo.png' %}" alt="Caraga Regional Hospital">
+  <h2 class="mt-4"><b>Caraga Regional Hospital Booking System</b></h2>
+  <p>Skip the lines and book your hospital appointment with ease. Our online booking system is designed for your convenience—fast, secure, and accessible anytime.</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,17 +1,21 @@
-<!-- templates/book.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Book Appointment</title>
-</head>
-<body>
-    <h1>Book an Appointment</h1>
-
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Book an Appointment</h2>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-info">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Book Now</button>
-        <a href="{% url 'appointment_list' %}">See List</a>
+        <label>Date:</label>
+        <input type="date" name="date" class="form-control" required><br>
+        <label>Time:</label>
+        <input type="time" name="time" class="form-control" required><br>
+        <label>Service:</label>
+        <input type="text" name="service" class="form-control" required><br>
+        <button class="btn btn-success">Book Appointment</button>
     </form>
-</body>
-</html>
+</div>
+{% endblock %}
