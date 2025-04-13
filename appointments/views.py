@@ -112,7 +112,6 @@ class LoginAPI(APIView):
 
 class BookAppointmentAPI(generics.CreateAPIView):
     serializer_class = AppointmentSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -123,28 +122,3 @@ class ListAppointmentsAPI(generics.ListAPIView):
 
     def get_queryset(self):
         return Appointment.objects.filter(user=self.request.user)
-
-@api_view(['PUT', 'PATCH'])
-@permission_classes([IsAuthenticated])
-def update_appointment(request, pk):
-    try:
-        appointment = Appointment.objects.get(pk=pk, user=request.user)
-    except Appointment.DoesNotExist:
-        return Response({"error": "Appointment not found."}, status=404)
-
-    serializer = AppointmentSerializer(appointment, data=request.data, partial=True)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
-    return Response(serializer.errors, status=400)
-
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
-def delete_appointment(request, pk):
-    try:
-        appointment = Appointment.objects.get(pk=pk, user=request.user)
-    except Appointment.DoesNotExist:
-        return Response({"error": "Appointment not found."}, status=404)
-
-    appointment.delete()
-    return Response({"message": "Appointment deleted."}, status=204)
