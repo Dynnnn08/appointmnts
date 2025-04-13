@@ -2,9 +2,33 @@
 {% block content %}
 <div class="container mt-4 card">
     <h2>Sign Up</h2>
+    {% if messages %}
+    <div class="alert 
+        {% if messages.tag == 'error' %} alert-danger
+        {% elif messages.tag == 'success' %} alert-success 
+        {% else %} alert-danger 
+        {% endif %}">
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        <div>
+            <label for="username">Username</label>
+            <input type="text" name="username" placeholder="Username" required>
+        </div>
+        <div>
+            <label for="email">Email Address</label>
+            <input type="email" name="email" placeholder="Email Address" required>
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="password" name="password" placeholder="Password" required>
+        </div>
         <button style="width: 100%;" class="btn btn-success" type="submit">Register</button>
     </form>
 </div>

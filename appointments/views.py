@@ -37,30 +37,55 @@ def home(request):
 
 def register_view(request):
     if request.user.is_authenticated:
-        return redirect('book')
+        return redirect('/')
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('book')
-    else:
-        form = UserCreationForm()
-    return render(request, 'register.html', {'form': form})
+        username = request.POST['username']
+        password = request.POST['password']
+        email = request.POST['email']
+        response = requests.post(
+            f'{API_URL}/registerAPI/',
+            json={
+                'username': username,
+                'password': password,
+                'email': email,
+            }
+        )
+        if response.status_code == 201:
+            messages.success(request, 'User Created Successfully!')
+            return redirect('/register/')
+        elif response.status_code == 400:
+            # Handle bad request (400)
+            messages.error(request, 'Invalid credentials or request format. Please try again.')
+        else:
+            messages.error(request, 'Invalid credentials')
+    return render(request, 'register.html')
 
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('/')
 
     if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
-        if form.is_valid():
-            login(request, form.get_user())
-            return redirect('/')
-    else:
-        form = AuthenticationForm()
-    return render(request, 'login.html', {'form': form})
+        username = request.POST['username']
+        password = request.POST['password']
+
+        response = requests.post(
+            f'{API_URL}/loginAPI/',
+            json={'username': username, 'password': password}
+        )
+        if response.status_code == 200:
+            token = response.json().get('token')
+
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)
+                return redirect('/?authToken=' + token)
+        elif response.status_code == 400:
+            # Handle bad request (400)
+            messages.error(request, 'Invalid credentials or request format. Please try again.')
+        else:  
+            messages.error(request, 'Invalid credentials')
+    return render(request, 'login.html')
 
 @login_required
 def book_appointment(request):
