@@ -2,6 +2,8 @@ from rest_framework import generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import authenticate
 
 from .models import Appointment
@@ -23,7 +25,7 @@ def home(request):
             f'{API_URL}/appointmentsAPI/',
             headers={'Authorization': f'Token {token.key}'}
         )
-
+        appointments = Appointment.objects.filter(user=request.user)
         if response.status_code == 200:
             appointments = response.json()
         else:
@@ -121,3 +123,28 @@ class ListAppointmentsAPI(generics.ListAPIView):
 
     def get_queryset(self):
         return Appointment.objects.filter(user=self.request.user)
+
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def update_appointment(request, pk):
+    try:
+        appointment = Appointment.objects.get(pk=pk, user=request.user)
+    except Appointment.DoesNotExist:
+        return Response({"error": "Appointment not found."}, status=404)
+
+    serializer = AppointmentSerializer(appointment, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_appointment(request, pk):
+    try:
+        appointment = Appointment.objects.get(pk=pk, user=request.user)
+    except Appointment.DoesNotExist:
+        return Response({"error": "Appointment not found."}, status=404)
+
+    appointment.delete()
+    return Response({"message": "Appointment deleted."}, status=204)

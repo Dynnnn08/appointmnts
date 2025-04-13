@@ -3,7 +3,8 @@
 {% load static %}
 {% if user.is_authenticated %}
 <div style="max-width: 800px; margin: 2rem auto; padding: 1rem;">
-  <h2 style="font-size: 1.8rem; color: #0d6efd; margin-bottom: 1rem;">Your Appointments</h2>
+  <h2 style="font-size: 1.8rem; color: #0d6efd; margin-bottom: 0;">Hi {{ user.username }}!</h2>
+  <h4 style="font-size: 1.3rem; color: #0d6efd; margin-bottom: 1rem;">Your Appointments</h4>
   {% if appointments %}
       <div style="display: grid; gap: 1rem;">
           {% for appt in appointments|dictsortreversed:"date" %}
@@ -13,9 +14,18 @@
                   border-radius: 8px;
                   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
                   border-left: 5px solid #0d6efd;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
               ">
-                  <p style="margin: 0; font-size: 1.1rem;"><strong>{{ appt.service }}</strong></p>
-                  <p style="margin: 0.2rem 0; color: #666;">📅 {{ appt.date }} &nbsp;&nbsp; ⏰ {{ appt.time }}</p>
+                  <div>
+                    <p style="margin: 0; font-size: 1.1rem;"><strong>{{ appt.service }}</strong></p>
+                    <p style="margin: 0.2rem 0; color: #666;">📅 {{ appt.date }} &nbsp;&nbsp; ⏰ {{ appt.time }}</p>
+                  </div>
+                  <!-- <div>
+                    <a href="{% url 'update_appointment' appt.id %}" class="btn btn-sm btn-warning">Update</a>
+                    <a href="{% url 'delete_appointment' appt.id %}" class="btn btn-sm btn-danger">Delete</a>
+                  </div> -->
               </div>
           {% endfor %}
       </div>
