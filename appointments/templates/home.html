@@ -21,6 +21,23 @@
                   <div>
                     <p style="margin: 0; font-size: 1.1rem;"><strong>{{ appt.service }}</strong></p>
                     <p style="margin: 0.2rem 0; color: #666;">📅 {{ appt.date }} &nbsp;&nbsp; ⏰ {{ appt.time }}</p>
+                    <p style="margin: 0.2rem 0;">
+                        <strong>Status:</strong> 
+                        {% if appt.status == 'ACCEPTED' %}
+                            <span style="color: green;">Accepted</span>
+                        {% elif appt.status == 'DONE' %}
+                            <span style="color: blue;">Done</span>
+                        {% elif appt.status == 'DECLINED' %}
+                            <span style="color: red;">Declined</span>
+                        {% else %}
+                            <span style="color: gray;">Pending</span>
+                        {% endif %}
+                    </p>
+                    {% if appt.status == 'DECLINED' and appt.admin_notes %}
+                    <p style="margin: 0.2rem 0; color: #666; font-style: italic;">
+                        Note: {{ appt.admin_notes }}
+                    </p>
+                    {% endif %}
                   </div>
               </div>
           {% endfor %}
@@ -34,7 +51,6 @@
 <div style="text-align: center; margin-top: 50px;" class="hero">
   <img src="{% static 'images/caragalogo.png' %}" alt="Caraga Regional Hospital">
   <h2 class="mt-4"><b>Caraga Regional Hospital Booking System</b></h2>
-  <p>Skip the lines and book your hospital appointment with ease. Our online booking system is designed for your convenience—fast, secure, and accessible anytime.</p>
 </div>
 {% endif %}
 {% endblock %}

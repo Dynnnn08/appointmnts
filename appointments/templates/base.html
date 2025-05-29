@@ -19,7 +19,7 @@
                             <a class="nav-link" href="{% url 'book' %}">Book Appointment</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                            <a class="nav-link" href="#" onclick="logoutUser(); return false;">Logout</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
@@ -42,5 +42,53 @@
     <footer class="text-center py-3 text-muted">
         &copy; 2025 Caraga Regional Hospital
     </footer>
+
+    <script>
+        // Store the auth token from the URL query params
+        function setAuthTokenFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const authToken = urlParams.get('authToken');
+        if (authToken) {
+            localStorage.setItem('authToken', authToken);
+        }
+        }
+
+        // Call this when your page loads
+        window.onload = setAuthTokenFromUrl;
+
+        function logoutUser() {
+    console.log("Logout clicked ✅");  // Add this line!
+
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        window.location.href = '/';
+        return;
+    }
+
+    fetch('/logoutAPI/', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Token ${token}`,
+        },
+    })
+    .then(response => {
+        if (response.ok) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/';
+        } else {
+            console.error('Logout failed');
+            localStorage.removeItem('authToken');
+            window.location.href = '/';
+        }
+    })
+    .catch(err => {
+        console.error('Logout error:', err);
+        localStorage.removeItem('authToken');
+        window.location.href = '/';
+    });
+}
+
+
+    </script>
 </body>
 </html>

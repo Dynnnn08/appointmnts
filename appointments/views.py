@@ -7,10 +7,11 @@ from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import authenticate
 
 from .models import Appointment
+from .forms import AppointmentForm
 from .serializers import RegisterSerializer, AppointmentSerializer
 
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 import requests
@@ -90,24 +91,16 @@ def login_view(request):
 @login_required
 def book_appointment(request):
     if request.method == 'POST':
-        date = request.POST['date']
-        time = request.POST['time']
-        service = request.POST['service']
-
-        token, created = Token.objects.get_or_create(user=request.user)
-
-        response = requests.post(f'{API_URL}/appointments/book/', json={
-            'date': date,
-            'time': time,
-            'service': service
-        }, headers={'Authorization': f'Token {token.key}'})
-
-        if response.status_code == 201:
+        form = AppointmentForm(request.POST)
+        if form.is_valid():
+            appointment = form.save(commit=False)
+            appointment.user = request.user
+            appointment.save()
             messages.success(request, 'Appointment booked successfully!')
-        else:
-            messages.error(request, f'Failed to book appointment: {response.text}')
-
-    return render(request, 'book.html')
+            return redirect('appointments')
+    else:
+        form = AppointmentForm()
+    return render(request, 'book.html', {'form': form})
 
 @login_required
 def list_appointments(request):
@@ -134,12 +127,13 @@ class LoginAPI(APIView):
             token, _ = Token.objects.get_or_create(user=user)
             return Response({'token': token.key})
         return Response({'error': 'Invalid credentials'}, status=400)
-
+    
 class BookAppointmentAPI(generics.CreateAPIView):
     serializer_class = AppointmentSerializer
-
+    permission_classes = [permissions.IsAuthenticated]
+    
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user, status='PENDING')
 
 class ListAppointmentsAPI(generics.ListAPIView):
     serializer_class = AppointmentSerializer
@@ -147,3 +141,13 @@ class ListAppointmentsAPI(generics.ListAPIView):
 
     def get_queryset(self):
         return Appointment.objects.filter(user=self.request.user)
+
+class LogoutAPI(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        if hasattr(request.user, 'auth_token'):
+            request.user.auth_token.delete()
+        logout(request)
+        response = Response({"detail": "Logged out successfully."}, status=200)
+        response.delete_cookie('sessionid')
+        return response

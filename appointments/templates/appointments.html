@@ -5,13 +5,32 @@
 </head>
 <body>
     <h1>All Booked Appointments</h1>
-    <ul>
-        {% for appointment in appointments %}
-            <li>{{ appointment.service }} | {{ appointment.date }} {{ appointment.time }}</li>
-        {% empty %}
-            <li>No appointments found.</li>
-        {% endfor %}
-    </ul>
+
+    {% for appointment in appointments %}
+        <div class="appointment-card" style="border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px;">
+            <h3><strong>Symptoms:</strong> {{ appointment.symptoms_of_illness }}</h3>
+            <p>
+                 📅 {{ appointment.date }} <br>
+                 🕒 {{ appointment.time }} <br>
+                 
+                   <strong>Status:</strong> 
+                {% if appointment.status == 'ACCEPTED' %}
+                    <span style="color: green;">Accepted</span>
+                {% elif appointment.status == 'DONE' %}
+                    <span style="color: blue;">Done</span>
+                {% elif appointment.status == 'DECLINED' %}
+                    <span style="color: red;">Declined</span>
+                {% else %}
+                    <span style="color: gray;">Pending</span>
+                {% endif %}
+            </p>
+        </div>
+    {% empty %}
+        <p>No appointments found.</p>
+    {% endfor %}
+
     <a href="{% url 'book' %}">Book another appointment</a>
 </body>
 </html>
+
+

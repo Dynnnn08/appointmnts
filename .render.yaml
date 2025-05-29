@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: attendance-system
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn myproject.wsgi"
+    envVars:
+      - key: SECRET_KEY
+        value: 'django-insecure-a(4^x5nz5a74a@rmd#0s%*j&sif!-bnb_le9u%i$5dh4@^a9mo'
+      - key: DEBUG
+        value: False
+      - key: DATABASE_URL
+        fromDatabase:
+          name: appointment-db
+          property: connectionString

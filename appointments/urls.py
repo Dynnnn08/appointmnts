@@ -1,7 +1,6 @@
 from django.urls import path
-from .views import RegisterAPI, LoginAPI, BookAppointmentAPI, ListAppointmentsAPI
+from .views import RegisterAPI, LoginAPI, BookAppointmentAPI, ListAppointmentsAPI, LogoutAPI
 from . import views
-from django.contrib.auth.views import LogoutView
 from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
@@ -16,5 +15,5 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('book/', views.book_appointment, name='book'),
     path('appointments/', views.list_appointments, name='appointments'),
-    path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
+    path('logoutAPI/', LogoutAPI.as_view(), name='api_logout'),
 ]
